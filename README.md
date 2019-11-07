@@ -3,6 +3,10 @@
 
 Flask 学习实例 (＾－＾)V
 
+#### 插件使用备忘
+
+辨识设备类型：https://theapicompany.com/
+
 #### 安装使用 python 3.7.5
 
 #### 安装 Flask 1.1.1
@@ -46,7 +50,7 @@ Flask 学习实例 (＾－＾)V
 
 windows vscode:
 
-    $env:FLASK_APP = "run.py"
+    $env:FLASK_APP = "setup.py"
     $env:FLASK_ENV = "development"
     flask run
 
