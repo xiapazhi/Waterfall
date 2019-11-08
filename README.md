@@ -55,7 +55,7 @@ windows vscode:
     flask run
 
 ##### 更改启动端口
-    flask run - 7000
+    flask run -p 7000
     
 这样可以实现以下功能：
 
