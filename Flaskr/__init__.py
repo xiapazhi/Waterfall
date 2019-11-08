@@ -11,15 +11,16 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
+    print(app.config['DATABASE'])
     if test_config is None:
         environment = app.config['ENV']
         if environment == 'development':
-            app.config.from_pyfile('config.py', silent=True)
+            app.config.from_pyfile('config.conf', silent=False)
         else:
             pass
     else:
         app.config.from_mapping(test_config)
-
+    print(app.config['DATABASE'])
     try:
         os.makedirs(app.instance_path)
     except OSError:
