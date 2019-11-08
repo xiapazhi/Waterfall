@@ -50,7 +50,7 @@ Flask 学习实例 (＾－＾)V
 
 windows vscode:
 
-    $env:FLASK_APP = "setup.py"
+    $env:FLASK_APP = "Flaskr"
     $env:FLASK_ENV = "development"
     flask run
 
