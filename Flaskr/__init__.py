@@ -2,16 +2,18 @@
 
 import os
 from flask import Flask
+from .routes import initializeRoutes
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    # instance_relative_config=True 告诉应用配置文件是相对于 instance folder (实例文件夹)的相对路径。
+    # 实例文件夹在 flaskr 包的外面，用于存放本地数据（例如配置密钥和数据库），不应当 提交到版本控制系统。
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
-    print(app.config['DATABASE'])
     if test_config is None:
         environment = app.config['ENV']
         if environment == 'development':
@@ -26,9 +28,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-     # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, sWorld!'
+    initializeRoutes(app)
 
     return app

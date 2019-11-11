@@ -1,0 +1,27 @@
+<!doctype html>
+
+<head>
+    <title>Hello from Flask</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.jpg') }}">
+    <script>
+        let a = function () {
+            return '123'
+        }
+        let b = a()
+        console.log(b)
+    </script>
+</head>
+
+<body>
+    {% if name %}
+    <h1>Hello {{ name }}!{{g}}</h1>
+    {% else %}
+    <h1>Hello, World!</h1>
+    {% endif %}
+    <!-- <img src="{{ url_for('static', filename='picture/test.jpg')}}" /> -->
+    <script>
+        window.onload = function () {
+            console.log(1232222)
+        }
+    </script>
+</body>

@@ -56,6 +56,11 @@ windows vscode:
 
 ##### 更改启动端口
     flask run -p 7000
+
+##### SO
+    $env:FLASK_APP = "setup.py"
+    $env:FLASK_ENV = "development"
+    flask run -p 7000
     
 这样可以实现以下功能：
 
