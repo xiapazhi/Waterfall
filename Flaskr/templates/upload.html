@@ -1,0 +1,40 @@
+<!doctype html>
+
+<head>
+    <title>Upload</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.jpg') }}">
+    <script src="https://cdn.jsdelivr.net/npm/superagent"></script>
+    <script src="{{url_for('static', filename='js/utils.js')}}"></script>
+    <script>
+
+    </script>
+</head>
+
+<body>
+    <h1>Upload new File</h1>
+    <input id="file" type="file" name="file" multiple="multiple" onchange="selecFileChange(this.files)" />
+
+    <script>
+
+        function selecFileChange(files) {
+            if (window.FileReader) {
+                let reader = new FileReader();
+                reader.readAsDataURL(files[0]);
+                reader.onloadend = function (e) {
+                    superagent
+                        .post('/upload/imgs/')
+                        .attach(files[0], convertBase64UrlToBlob(reader.result))
+                        .then(res => {
+                            console.log("成功~")
+                            console.log(res)
+                        }, err => {
+                            console.log("失败~")
+                            console.error(err)
+                        })
+                }
+            } else {
+
+            }
+        }
+    </script>
+</body>

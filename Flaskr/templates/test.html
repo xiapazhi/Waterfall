@@ -3,12 +3,9 @@
 <head>
     <title>Private Collection</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.jpg') }}">
+    <script src="https://cdn.jsdelivr.net/npm/superagent"></script>
     <script>
-        let a = function () {
-            return '123'
-        }
-        let b = a()
-        console.log(b)
+
     </script>
 </head>
 
@@ -19,9 +16,18 @@
     <h1>Hello, World!</h1>
     {% endif %}
     <!-- <img src="{{ url_for('static', filename='picture/test.jpg')}}" /> -->
-    <script>
+    <script>   
         window.onload = function () {
-            console.log(1232222)
+            console.log('{{testParams1|tojson|safe}}')
+            console.log('{{testParams2|tojson|safe}}')
+            console.log('{{config["DATABASE"]|tojson|safe}}')
+            superagent
+                .get('/test/')
+                .then(res =>{
+                    console.log(res)
+                }, err =>{
+                    console.error(err)
+                })
         }
     </script>
 </body>
