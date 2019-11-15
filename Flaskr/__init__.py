@@ -1,8 +1,10 @@
 # __init__.py 有两个作用：一是包含应用工厂；二是 告诉 Python flaskr 文件夹应当视作为一个包。
-
 import os
+import sys
+import logging
 from flask import Flask
 from .routes import initializeRoutes
+from flask.logging import default_handler
 
 
 def create_app(test_config=None):
@@ -14,11 +16,12 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
-    
+
     if test_config is None:
         environment = app.config['ENV']
         if environment == 'development':
             app.config.from_pyfile('config.conf', silent=False)
+            config_log(environment)
         else:
             pass
     else:
@@ -31,3 +34,17 @@ def create_app(test_config=None):
 
     initializeRoutes(app)
     return app
+
+
+def config_log(env):
+    if env == 'development':
+        pass
+    elif env == 'production':
+        file_handler = logging.FileHandler(
+            filename='log_massage.log', encoding=["utf-8"])
+        # formatter = logging.Formatter(
+        #     '%(asctime)s -|- %(levelname)s -|- %(message)s')
+        # file_handler.setFormatter(formatter)
+        logging.getLogger().setLevel(logging.warning)
+        logger = logging.getLogger(__name__)
+        logger.addHandler(file_handler)

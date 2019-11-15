@@ -11,23 +11,24 @@
 
 <body>
     {% if name %}
-    <h1>Hello {{ name }}!{{g}}</h1>
+    <h1>Hello {{ name }}! {{g}}</h1>
     {% else %}
     <h1>Hello, World!</h1>
     {% endif %}
     <!-- <img src="{{ url_for('static', filename='picture/test.jpg')}}" /> -->
+    
     <script>   
         window.onload = function () {
             console.log('{{testParams1|tojson|safe}}')
             console.log('{{testParams2|tojson|safe}}')
             console.log('{{config["DATABASE"]|tojson|safe}}')
-            superagent
-                .get('/test/')
-                .then(res =>{
-                    console.log(res)
-                }, err =>{
-                    console.error(err)
-                })
+            // superagent
+            //     .get('/test/')
+            //     .then(res =>{
+            //         console.log(res)
+            //     }, err =>{
+            //         console.error(err)
+            //     })
         }
     </script>
 </body>
