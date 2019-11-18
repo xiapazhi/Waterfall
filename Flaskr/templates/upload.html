@@ -15,7 +15,7 @@
 <body style="padding:16px">
     <input id="file" type="file" name="file" multiple="multiple" onchange="selecFileChange(this.files)" />
     <button class="uk-button">button</button>
-    <div id="img_show" style="float: left;">
+    <div id="img_show" style="text-align: justify;">
 
     </div>
     <script>
@@ -30,7 +30,7 @@
                     reader.onloadend = function (e) {
                         document.getElementById('img_show').innerHTML += `
                             <div class="uk-thumbnail">
-                                <img src="${reader.result}" style="width:200px" alt="sss">
+                                <img src="${reader.result}" style="height:200px" alt="sss">
                                 <div class="uk-thumbnail-caption">...</div>
                             </div>`
 
