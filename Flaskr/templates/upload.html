@@ -2,36 +2,51 @@
 
 <head>
     <title>Upload</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.jpg') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='default/icon/favicon.jpg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='uikit-2.25.0/css/uikit.almost-flat.min.css') }}">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/superagent"></script>
-    <script src="{{url_for('static', filename='js/utils.js')}}"></script>
+    <script src="{{url_for('static', filename='default/js/utils.js')}}"></script>
     <script>
 
     </script>
 </head>
 
-<body>
-    <h1>Upload new File</h1>
+<body style="padding:16px">
     <input id="file" type="file" name="file" multiple="multiple" onchange="selecFileChange(this.files)" />
+    <button class="uk-button">button</button>
+    <div id="img_show" style="float: left;">
 
+    </div>
     <script>
 
         function selecFileChange(files) {
+            console.log(files)
+
             if (window.FileReader) {
-                let reader = new FileReader();
-                reader.readAsDataURL(files[0]);
-                reader.onloadend = function (e) {
-                    superagent
-                        .post('/upload/imgs/')
-                        .attach(files[0].name, convertBase64UrlToBlob(reader.result))
-                        .then(res => {
-                            console.log("成功~")
-                            console.log(res)
-                        }, err => {
-                            console.log("失败~")
-                            console.error(err)
-                        })
+                for (let i in files) {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(files[i]);
+                    reader.onloadend = function (e) {
+                        document.getElementById('img_show').innerHTML += `
+                            <div class="uk-thumbnail">
+                                <img src="${reader.result}" style="width:200px" alt="sss">
+                                <div class="uk-thumbnail-caption">...</div>
+                            </div>`
+
+                        // superagent
+                        //     .post('/upload/imgs/')
+                        //     .attach(files[0].name, convertBase64UrlToBlob(reader.result))
+                        //     .then(res => {
+                        //         console.log("成功~")
+                        //         console.log(res)
+                        //     }, err => {
+                        //         console.log("失败~")
+                        //         console.error(err)
+                        //     })
+                    }
                 }
+
             } else {
 
             }
