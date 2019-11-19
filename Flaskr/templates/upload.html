@@ -15,17 +15,23 @@
 <body style="padding:16px">
     <input id="file" type="file" name="file" multiple="multiple" onchange="selecFileChange(this.files)" />
     <button class="uk-button">button</button>
-    <div id="img_show" style="">
+    <div id="img_show" style="text-align: justify;position: relative;">
 
     </div>
     <script>
         const imgBaseWidth = 230;
+        let imgShowDemoWidth = document.getElementById("img_show").offsetWidth;
         let totalShowWidth = document.body.clientWidth;
-        console.log(totalShowWidth)
-        let rowNum = Math.floor(totalShowWidth / imgBaseWidth);
-        let imgBaseWidthRemainder = totalShowWidth % imgBaseWidth;
-        let imgWidth = imgBaseWidth + Math.floor(imgBaseWidthRemainder / rowNum) - 15;
-        console.log(rowNum, imgBaseWidthRemainder, imgWidth)
+        let rowNum = Math.floor(imgShowDemoWidth / imgBaseWidth);
+        let imgBaseWidthRemainder = imgShowDemoWidth % imgBaseWidth;
+        let imgWidth = imgBaseWidth + Math.floor(imgBaseWidthRemainder / rowNum) - 10 - 10;
+        let rowDivDom = '';
+        for (let i = 0; i < rowNum; i++) {
+            rowDivDom += `
+                <div id="imgRow-${i}" style="width:${imgWidth + 10}px;display:inline-block;float:left"></div>
+            `
+        }
+        document.getElementById('img_show').innerHTML = rowDivDom
         function selecFileChange(files) {
             console.log(files)
 
@@ -34,8 +40,17 @@
                     let reader = new FileReader();
                     reader.readAsDataURL(files[i]);
                     reader.onloadend = function (e) {
-                        document.getElementById('img_show').innerHTML += `
-                            <div class="uk-thumbnail" style="margin:0px">
+                        let minImgRowDomHeight = 9999999;
+                        let minImgRowDomId = 0;
+                        for (let i = 0; i < rowNum; i++) {
+                            if (minImgRowDomHeight > document.getElementById("imgRow-" + i).offsetHeight) {
+                                minImgRowDomHeight = document.getElementById("imgRow-" + i).offsetHeight;
+                                minImgRowDomId = i;
+                            }
+                        }
+
+                        document.getElementById("imgRow-" + minImgRowDomId).innerHTML += `
+                            <div class="uk-thumbnail uk-animation-slide-top" style="margin:0px">
                                 <img src="${reader.result}" style="width:${imgWidth}px" alt="">
                                 <div class="uk-thumbnail-caption">...</div>
                             </div>`
