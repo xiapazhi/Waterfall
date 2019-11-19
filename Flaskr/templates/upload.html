@@ -15,12 +15,17 @@
 <body style="padding:16px">
     <input id="file" type="file" name="file" multiple="multiple" onchange="selecFileChange(this.files)" />
     <button class="uk-button">button</button>
-    <div id="img_show" style="text-align: justify;">
+    <div id="img_show" style="">
 
     </div>
     <script>
+        const imgBaseWidth = 230;
         let totalShowWidth = document.body.clientWidth;
-
+        console.log(totalShowWidth)
+        let rowNum = Math.floor(totalShowWidth / imgBaseWidth);
+        let imgBaseWidthRemainder = totalShowWidth % imgBaseWidth;
+        let imgWidth = imgBaseWidth + Math.floor(imgBaseWidthRemainder / rowNum) - 15;
+        console.log(rowNum, imgBaseWidthRemainder, imgWidth)
         function selecFileChange(files) {
             console.log(files)
 
@@ -30,8 +35,8 @@
                     reader.readAsDataURL(files[i]);
                     reader.onloadend = function (e) {
                         document.getElementById('img_show').innerHTML += `
-                            <div class="uk-thumbnail">
-                                <img src="${reader.result}" style="height:200px" alt="sss">
+                            <div class="uk-thumbnail" style="margin:0px">
+                                <img src="${reader.result}" style="width:${imgWidth}px" alt="">
                                 <div class="uk-thumbnail-caption">...</div>
                             </div>`
 
