@@ -26,9 +26,10 @@
     <div class="uk-progress uk-progress-striped uk-active" style="margin: 24px 0;">
         <div id="total-progress" class="uk-progress-bar" style="width: 0%;color: black;"></div>
     </div>
-    <div id="img_show" style="text-align: justify;position: relative;">
+    <div id="img_show" style="text-align: center;overflow: auto;">
 
     </div>
+
     <script>
         const imgBaseWidth = 230;
         let imgShowDemoWidth = document.getElementById("img_show").offsetWidth;
@@ -39,7 +40,7 @@
         let rowDivDom = '';
         for (let i = 0; i < rowNum; i++) {
             rowDivDom += `
-                <div id="imgRow-${i}" style="width:${imgWidth + 10}px;display:inline-block;float:left"></div>
+                <div id="imgRow-${i}" style="width:${imgWidth + 10}px;display:inline-block;vertical-align: top;"></div>
             `
         }
         document.getElementById('img_show').innerHTML = rowDivDom
@@ -49,7 +50,6 @@
             selectFiles = files;
             baseDataToUpload = [];
             console.log(files)
-            document.getElementById('total-progress').innerHTML = files.length;
             if (window.FileReader) {
                 for (let i in files) {
                     let reader = new FileReader();
@@ -97,15 +97,18 @@
                               total: // total file size, may be missing
                               loaded: // bytes downloaded or uploaded so far
                             } */
-                            console.log(event)
-                            document.getElementById('img-progress-' + b.id).style.width = `${event.percent}%`;
-                            let totalProgress = (((completeNum + (event.percent / 100)) / baseDataLength) * 100).toFixed(2);
-                            document.getElementById('total-progress').style.width = `${totalProgress}%`;
-                            
-                            if (event.percent == 100) {
-                                completeNum += 0.5;
+                            if (event.direction == 'upload') {
+                                console.log(event)
+                                document.getElementById('img-progress-' + b.id).style.width = `${event.percent}%`;
+                                let totalProgress = (((completeNum + (event.percent / 100)) / baseDataLength) * 100).toFixed(2);
+                                document.getElementById('total-progress').style.width = `${totalProgress}%`;
+
+                                if (event.percent == 100) {
+                                    completeNum += 1;
+                                }
+                                document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
                             }
-                            document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
+
 
                         })
                         .then(res => {
