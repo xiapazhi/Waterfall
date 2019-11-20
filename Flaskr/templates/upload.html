@@ -4,6 +4,13 @@
     <title>Upload</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='default/icon/favicon.jpg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='uikit-2.25.0/css/uikit.almost-flat.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='uikit-2.25.0/css/components/progress.almost-flat.min.css') }}">
+    <style>
+        .uk-progress {
+            margin-bottom: 0;
+        }
+    </style>
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/superagent"></script>
     <script src="{{url_for('static', filename='default/js/utils.js')}}"></script>
@@ -13,8 +20,12 @@
 </head>
 
 <body style="padding:16px">
-    <input id="file" type="file" name="file" multiple="multiple" onchange="selecFileChange(this.files)" />
-    <button class="uk-button">button</button>
+    <input id="file" class="uk-button" type="file" name="file" multiple="multiple"
+        onchange="selecFileChange(this.files)" />
+    <button class="uk-button" onclick="upload_()">button</button>
+    <div class="uk-progress uk-progress-striped uk-active" style="margin: 24px 0;">
+        <div id="total-progress" class="uk-progress-bar" style="width: 0%;color: black;"></div>
+    </div>
     <div id="img_show" style="text-align: justify;position: relative;">
 
     </div>
@@ -32,9 +43,13 @@
             `
         }
         document.getElementById('img_show').innerHTML = rowDivDom
+        let selectFiles = [];
+        let baseDataToUpload = [];
         function selecFileChange(files) {
+            selectFiles = files;
+            baseDataToUpload = [];
             console.log(files)
-
+            document.getElementById('total-progress').innerHTML = files.length;
             if (window.FileReader) {
                 for (let i in files) {
                     let reader = new FileReader();
@@ -52,24 +67,53 @@
                         document.getElementById("imgRow-" + minImgRowDomId).innerHTML += `
                             <div class="uk-thumbnail uk-animation-slide-top" style="margin:0px">
                                 <img src="${reader.result}" style="width:${imgWidth}px" alt="">
-                                <div class="uk-thumbnail-caption">...</div>
+                                <div class="uk-thumbnail-caption">
+                                    <div class="uk-progress uk-progress-striped uk-active uk-progress-mini">
+                                        <div id="img-progress-${i}" class="uk-progress-bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
                             </div>`
-
-                        // superagent
-                        //     .post('/upload/imgs/')
-                        //     .attach(files[0].name, convertBase64UrlToBlob(reader.result))
-                        //     .then(res => {
-                        //         console.log("成功~")
-                        //         console.log(res)
-                        //     }, err => {
-                        //         console.log("失败~")
-                        //         console.error(err)
-                        //     })
+                        baseDataToUpload.push({ id: i, name: files[i].name, base64: reader.result })
                     }
                 }
-
             } else {
 
+            }
+        }
+
+        function upload_() {
+            let completeNum = 0;
+            let baseDataLength = baseDataToUpload.length;
+            if (baseDataLength) {
+                for (let b of baseDataToUpload) {
+                    superagent
+                        .post('/upload/imgs/')
+                        .attach(b.name, convertBase64UrlToBlob(b.base64))
+                        .on('progress', event => {
+                            /* the event is:
+                            {
+                              direction: "upload" or "download"
+                              percent: 0 to 100 // may be missing if file size is unknown
+                              total: // total file size, may be missing
+                              loaded: // bytes downloaded or uploaded so far
+                            } */
+                            console.log(event)
+                            document.getElementById('img-progress-' + b.id).style.width = `${event.percent}%`;
+                            let totalProgress = (((completeNum + (event.percent / 100)) / baseDataLength) * 100).toFixed(2);
+                            document.getElementById('total-progress').style.width = `${totalProgress}%`;
+                            
+                            if (event.percent == 100) {
+                                completeNum += 0.5;
+                            }
+                            document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
+
+                        })
+                        .then(res => {
+                            console.log(res)
+                        }, err => {
+                            console.error(err)
+                        })
+                }
             }
         }
     </script>
