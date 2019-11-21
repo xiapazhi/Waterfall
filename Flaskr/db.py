@@ -17,7 +17,7 @@ def connect_db():
             current_app.config['DATABASE'],
             detect_types=sqlite3.PARSE_DECLTYPES
         )
-        # sqlite3.Row 告诉连接返回类似于字典的行，这样可以通过列名称来操作 数据。
+        # sqlite3.Row 告诉连接返回类似于字典的行，这样可以通过列名称来操作数据。
         g.db.row_factory = sqlite3.Row
     
     return g.db
