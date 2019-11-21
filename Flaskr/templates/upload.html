@@ -20,36 +20,62 @@
 </head>
 
 <body style="padding:16px">
-    <input id="file" class="uk-button" type="file" name="file" multiple="multiple"
-        onchange="selecFileChange(this.files)" />
-    <button class="uk-button" onclick="upload_()">button</button>
-    <div class="uk-progress uk-progress-striped uk-active" style="margin: 24px 0;">
-        <div id="total-progress" class="uk-progress-bar" style="width: 0%;color: black;"></div>
+
+    <div class="uk-grid uk-grid-small">
+        <div class="uk-width-2-10">
+            <button class="uk-button uk-button-primary" style="width: 100%;" onclick="selecFile()">选择图片</button>
+            <input id="file-input" style="display: none;" type="file" name="file" multiple="multiple"
+                onchange="selecFileChange(this.files)" />
+        </div>
+        <div class="uk-width-7-10">
+            <div class="uk-progress uk-progress-striped uk-active "
+                style="width: 100%;height: 30px; line-height: 33px;">
+                <div id="total-progress" class="uk-progress-bar" style="width: 0%;color: black;"></div>
+            </div>
+        </div>
+        <div class="uk-width-1-10">
+            <button class="uk-button uk-button-danger" style="width: 100%;" onclick="upload_()">上传</button>
+        </div>
     </div>
-    <div id="img_show" style="text-align: center;overflow: auto;">
+
+    <div id="img_show" style="display: flex;justify-content: space-between;overflow: auto;margin-top: 16px;">
 
     </div>
 
     <script>
-        const imgBaseWidth = 230;
-        let imgShowDemoWidth = document.getElementById("img_show").offsetWidth;
-        let totalShowWidth = document.body.clientWidth;
-        let rowNum = Math.floor(imgShowDemoWidth / imgBaseWidth);
-        let imgBaseWidthRemainder = imgShowDemoWidth % imgBaseWidth;
-        let imgWidth = imgBaseWidth + Math.floor(imgBaseWidthRemainder / rowNum) - 10 - 10;
-        let rowDivDom = '';
-        for (let i = 0; i < rowNum; i++) {
-            rowDivDom += `
-                <div id="imgRow-${i}" style="width:${imgWidth + 10}px;display:inline-block;vertical-align: top;"></div>
-            `
+        
+        let rowNum = 1;
+        let imgWidth = '100%';
+        function selecFile() {
+            document.getElementById('file-input').click();
         }
-        document.getElementById('img_show').innerHTML = rowDivDom
+
+        function createImgRow() {
+            const imgBaseWidth = 230;
+            let imgShowDemoWidth = document.getElementById("img_show").offsetWidth;
+            let totalShowWidth = document.body.clientWidth;
+            rowNum = Math.floor(imgShowDemoWidth / imgBaseWidth);
+            let imgBaseWidthRemainder = imgShowDemoWidth % imgBaseWidth;
+            imgWidth = imgBaseWidth + Math.floor(imgBaseWidthRemainder / rowNum) - 10 - 10;
+            let rowDivDom = '';
+            for (let i = 0; i < rowNum; i++) {
+                rowDivDom += `
+                <div style="width:${imgWidth + 10}px;display:inline-block;">
+                    <div id="imgRow-${i}"> </div>
+                </div>
+            `
+            }
+            document.getElementById('img_show').innerHTML = rowDivDom
+        }
+
         let selectFiles = [];
         let baseDataToUpload = [];
         function selecFileChange(files) {
+            createImgRow()
             selectFiles = files;
             baseDataToUpload = [];
-            console.log(files)
+            document.getElementById('total-progress').style.width = `30%`;
+            document.getElementById('total-progress').innerHTML = `已选择 ${files.length}`;
             if (window.FileReader) {
                 for (let i in files) {
                     let reader = new FileReader();
@@ -58,14 +84,15 @@
                         let minImgRowDomHeight = 9999999;
                         let minImgRowDomId = 0;
                         for (let i = 0; i < rowNum; i++) {
-                            if (minImgRowDomHeight > document.getElementById("imgRow-" + i).offsetHeight) {
-                                minImgRowDomHeight = document.getElementById("imgRow-" + i).offsetHeight;
+                            let currDomHeight = document.getElementById("imgRow-" + i).offsetHeight;
+                            if (minImgRowDomHeight > currDomHeight) {
+                                minImgRowDomHeight = currDomHeight;
                                 minImgRowDomId = i;
                             }
                         }
 
                         document.getElementById("imgRow-" + minImgRowDomId).innerHTML += `
-                            <div class="uk-thumbnail uk-animation-slide-top" style="margin:0px">
+                            <div class="uk-thumbnail uk-animation-slide-top" style="margin:0px 0px 8px">
                                 <img src="${reader.result}" style="width:${imgWidth}px" alt="">
                                 <div class="uk-thumbnail-caption">
                                     <div class="uk-progress uk-progress-striped uk-active uk-progress-mini">
@@ -112,12 +139,18 @@
 
                         })
                         .then(res => {
-                            console.log(res)
+                            // console.log(res)
                         }, err => {
-                            console.error(err)
+                            // console.error(err)
                         })
                 }
             }
         }
+
+        // window.addEventListener("resize", function () {
+        //     if(baseDataToUpload.length){
+
+        //     }
+        // });
     </script>
 </body>
