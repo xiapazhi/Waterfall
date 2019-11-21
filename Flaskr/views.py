@@ -30,4 +30,4 @@ def uploadImgs():
                 v.save(storage_path)
     except Exception as e:
         pass
-    return '1233223'
+    return ''
