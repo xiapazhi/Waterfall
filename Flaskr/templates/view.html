@@ -25,12 +25,37 @@
     </div>
     <script>
         let windowHeight = window.screen.availHeight;
+        let loading = false;
+        window.onload = function () {
+            let initPictures = '{{init_pictures|tojson|safe}}';
+            console.log(initPictures)
+            // superagent
+            //     .get('/test/')
+            //     .then(res =>{
+            //         console.log(res)
+            //     }, err =>{
+            //         console.error(err)
+            //     })
+        }
         window.onscroll = function () {
-            let totalHeight = document.body.scrollHeight;
-            let scrollTopHeight = document.documentElement.scrollTop;
-            if(totalHeight - scrollTopHeight - windowHeight < 2100){
-                console.log(123)
+            if (!loading) {
+                let totalHeight = document.body.scrollHeight;
+                let scrollTopHeight = document.documentElement.scrollTop;
+                if (totalHeight - scrollTopHeight - windowHeight < 2100) {
+                    loading = true;
+                    superagent
+                        .post('/view/more/')
+                        .send([])
+                        .then(res => {
+                            // console.log(res)
+                            loading = false;
+                        }, err => {
+                            // console.error(err)
+                            loading = false;
+                        })
+                }
             }
+
         };
     </script>
 </body>

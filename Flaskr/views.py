@@ -1,5 +1,6 @@
 # 和 router 直接关联的写在这里 其他的写在 utils 哈哈哈哈哈
 import os
+import json
 from . import db
 from .utils import allowed_file, get_picture, warning
 from werkzeug.utils import secure_filename
@@ -48,5 +49,13 @@ def view():
     try:
         pictures = get_picture()
         return render_template('view.html', init_pictures=pictures)
+    except Exception as e:
+        warning(e)
+
+def view_more():
+    try:
+        a = request
+        pictures = get_picture()
+        return ''
     except Exception as e:
         warning(e)
