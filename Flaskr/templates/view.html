@@ -1,0 +1,36 @@
+<!doctype html>
+
+<head>
+    <title>Private Collection</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='default/icon/favicon.jpg') }}">
+    <style>
+        #imgView img {
+            width: 100%;
+            margin-bottom: 16px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/superagent"></script>
+    <script>
+
+    </script>
+</head>
+
+<body style="margin: 24px;background-color: darkgrey;">
+    <div id="imgView">
+        {% if init_pictures %}
+        {% for row in init_pictures %}
+        <img src="{{ url_for('static', filename='picture/' + row['name']) }}" />
+        {% endfor %}
+        {% endif %}
+    </div>
+    <script>
+        let windowHeight = window.screen.availHeight;
+        window.onscroll = function () {
+            let totalHeight = document.body.scrollHeight;
+            let scrollTopHeight = document.documentElement.scrollTop;
+            if(totalHeight - scrollTopHeight - windowHeight < 2100){
+                console.log(123)
+            }
+        };
+    </script>
+</body>

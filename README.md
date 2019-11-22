@@ -70,5 +70,21 @@ windows vscode:
 
 3. 打开 Flask 应用的调试模式。
 
+### 初始化数据库
+
+1、设置环境
+
+    $env:FLASK_APP = "setup.py"
+    $env:FLASK_ENV = "development"
+
+2、初始化
+
+    flask init-db
+    #代码在 db.py init_db_command()
+    
+
+
+
+
 
 

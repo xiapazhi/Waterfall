@@ -5,6 +5,7 @@ import logging
 from flask import Flask
 from .routes import initializeRoutes
 from flask.logging import default_handler
+from .db import init_app_db
 
 
 def create_app(test_config=None):
@@ -32,6 +33,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    init_app_db(app)
     initializeRoutes(app)
     return app
 
