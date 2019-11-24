@@ -44,18 +44,29 @@ def uploadImgs():
         warning(e)
     return ''
 
+# pictures = get_picture()
+    # return render_template('test.html', init_pictures=pictures)
 
-def view():
-    try:
-        pictures = get_picture()
-        return render_template('view.html', init_pictures=pictures)
-    except Exception as e:
-        warning(e)
+
+def view_page():
+    pictures = get_picture()
+    picture_ids = []
+    for p in pictures:
+        picture_ids.append(p['id'])
+    return render_template('view.html', init_pictures=pictures, pictureIds=picture_ids)
+
 
 def view_more():
     try:
-        a = request
-        pictures = get_picture()
-        return ''
+        alreadyIds = json.loads(request.data)
+        pictures = get_picture(alreadyIds['alreadyIds'])
+        data = []
+        for row in pictures:
+            data.append({
+                'id':row['id'],
+                'name':row['name']
+            })
+        pictures_json = json.dumps(data)
+        return pictures_json
     except Exception as e:
         warning(e)

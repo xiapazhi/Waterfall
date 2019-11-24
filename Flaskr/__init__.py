@@ -22,9 +22,9 @@ def create_app(test_config=None):
         environment = app.config['ENV']
         if environment == 'development':
             app.config.from_pyfile('config.conf', silent=False)
-            # config_log(environment)
-        else:
-            pass
+        else:  # production
+            app.config.from_pyfile('config.conf', silent=False)
+            config_log(app)
     else:
         app.config.from_mapping(test_config)
 
@@ -38,16 +38,6 @@ def create_app(test_config=None):
     return app
 
 
-def config_log(env):
-    if env == 'development':
-        pass
-    elif env == 'production':
-        # file_handler = logging.FileHandler(
-        #     filename='log_massage.log', encoding="utf-8")
-        # formatter = logging.Formatter(
-        #     '%(asctime)s -|- %(levelname)s -|- %(message)s')
-        # file_handler.setFormatter(formatter)
-        # logging.getLogger().setLevel(logging.warning)
-        # logger = logging.getLogger(__name__)
-        # logger.addHandler(file_handler)
-        pass
+def config_log(app):
+    logging.basicConfig(filename=os.path.join(
+        app.instance_path, 'logger.log'))

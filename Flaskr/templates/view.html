@@ -3,6 +3,7 @@
 <head>
     <title>Private Collection</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='default/icon/favicon.jpg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='uikit-2.25.0/css/uikit.almost-flat.min.css') }}">
     <style>
         #imgView img {
             width: 100%;
@@ -15,7 +16,7 @@
     </script>
 </head>
 
-<body style="margin: 24px;background-color: darkgrey;">
+<body style="margin: 24px;">
     <div id="imgView">
         {% if init_pictures %}
         {% for row in init_pictures %}
@@ -23,39 +24,56 @@
         {% endfor %}
         {% endif %}
     </div>
+    <div id="loading" style="text-align: center;padding: 16px 0;display: none;">
+        <i class="uk-icon-circle-o-notch uk-icon-spin uk-icon-medium"></i>
+    </div>
     <script>
         let windowHeight = window.screen.availHeight;
+        let moreData = true;
         let loading = false;
+        let initIds = [];
         window.onload = function () {
-            let initPictures = '{{init_pictures|tojson|safe}}';
-            console.log(initPictures)
-            // superagent
-            //     .get('/test/')
-            //     .then(res =>{
-            //         console.log(res)
-            //     }, err =>{
-            //         console.error(err)
-            //     })
+            initIds = JSON.parse('{{pictureIds|tojson|safe}}');
         }
         window.onscroll = function () {
-            if (!loading) {
+            if (!loading && initIds.length && moreData) {
                 let totalHeight = document.body.scrollHeight;
                 let scrollTopHeight = document.documentElement.scrollTop;
                 if (totalHeight - scrollTopHeight - windowHeight < 2100) {
                     loading = true;
+                    showLoading();
                     superagent
                         .post('/view/more/')
-                        .send([])
+                        .send({ alreadyIds: initIds })
                         .then(res => {
-                            // console.log(res)
+                            let jsonPics = res.text;
+                            let pics = JSON.parse(jsonPics);
+                            if (pics.length) {
+                                let nextImgsDom = '';
+                                for (let p of pics) {
+                                    initIds.push(p.id)
+                                    nextImgsDom += `<img src="/static/picture/${p.name}" />`
+                                }
+                                document.getElementById('imgView').innerHTML += nextImgsDom;
+                            } else {
+                                moreData = false;
+                            }
                             loading = false;
+                            hideLoading();
                         }, err => {
-                            // console.error(err)
                             loading = false;
+                            hideLoading();
                         })
                 }
             }
-
         };
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
     </script>
 </body>

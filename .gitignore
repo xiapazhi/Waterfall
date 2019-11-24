@@ -1,7 +1,6 @@
 venv/
 
 *.pyc
-sqlite.db
 __pycache__/
 
 .pytest_cache/
@@ -11,3 +10,4 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+instance/logger.log

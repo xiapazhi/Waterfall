@@ -9,10 +9,19 @@ def allowed_file(filename):
 
 
 def get_picture(already=[]):
-    sqlite = db.connect_db()
-    cursor = sqlite.cursor()
-    cursor.execute(f"SELECT * FROM picture LIMIT 15")
-    return cursor.fetchall()
+    try:
+        # searchSql = 'SELECT * FROM picture WHERE id NOT IN ( 26,27,28)'
+        searchSql = f"SELECT * FROM picture"
+        if len(already) > 0:
+            alreadyStr = ','.join([str(id) for id in already])
+            searchSql = searchSql + " WHERE id NOT IN (" + alreadyStr + ")"
+        searchSql = searchSql + " LIMIT 15"
+        sqlite = db.connect_db()
+        cursor = sqlite.cursor()
+        cursor.execute(searchSql)
+        return cursor.fetchall()
+    except Exception as e:
+        warning(e)
 
 
 def warning(e):
