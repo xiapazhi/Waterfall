@@ -12,4 +12,6 @@ def app(environ, start_response):
         ("Content-Type", "text/plain"),
         ("Content-Length", str(len(data)))
     ])
-    return iter([data])
+    app = Flaskr.create_app(None)
+    app.run()
+    return app
