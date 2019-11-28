@@ -2,16 +2,18 @@ import logging
 import Flaskr
 import sys
 
-# app = Flaskr.create_app(None)
+app = Flaskr.create_app(None)
 # app.run()
 
 
-def app(environ, start_response):
-    data = b"Hello, World!\n"
-    start_response("200 OK", [
-        ("Content-Type", "text/plain"),
-        ("Content-Length", str(len(data)))
-    ])
-    app = Flaskr.create_app(None)
+# def app(environ, start_response):
+#     data = b"Hello, World!\n"
+#     start_response("200 OK", [
+#         ("Content-Type", "text/plain"),
+#         ("Content-Length", str(len(data)))
+#     ])
+#     app = Flaskr.create_app(None)
+#     return app.run()
+
+if __name__ == '__main__':
     app.run()
-    return app
