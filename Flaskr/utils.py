@@ -41,7 +41,7 @@ def get_picture(already=[]):
                     realSearchIds.append(currRandonId)
             # searchSql = 'SELECT * FROM picture WHERE id NOT IN ( 26,27,28)'
         searchSql = f"SELECT * FROM picture"
-        if len(already) > 0:
+        if len(already) > 0 or True:
             realSearchIdStr = ','.join([str(id) for id in realSearchIds])
             searchSql = searchSql + " WHERE id IN (" + realSearchIdStr + ")"
         searchSql = searchSql + " LIMIT 15"
