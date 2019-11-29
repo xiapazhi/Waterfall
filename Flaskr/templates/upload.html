@@ -43,7 +43,7 @@
     </div>
 
     <script>
-        
+
         let rowNum = 1;
         let imgWidth = '100%';
         function selecFile() {
@@ -108,41 +108,44 @@
             }
         }
 
-        function upload_() {
+        async function upload_() {
             let completeNum = 0;
             let baseDataLength = baseDataToUpload.length;
             if (baseDataLength) {
                 for (let b of baseDataToUpload) {
-                    superagent
-                        .post('/upload/imgs/')
-                        .attach(b.name, convertBase64UrlToBlob(b.base64))
-                        .on('progress', event => {
-                            /* the event is:
-                            {
-                              direction: "upload" or "download"
-                              percent: 0 to 100 // may be missing if file size is unknown
-                              total: // total file size, may be missing
-                              loaded: // bytes downloaded or uploaded so far
-                            } */
-                            if (event.direction == 'upload') {
-                                console.log(event)
-                                document.getElementById('img-progress-' + b.id).style.width = `${event.percent}%`;
-                                let totalProgress = (((completeNum + (event.percent / 100)) / baseDataLength) * 100).toFixed(2);
-                                document.getElementById('total-progress').style.width = `${totalProgress}%`;
+                    try {
+                        await superagent
+                            .post('/upload/imgs/')
+                            .attach(b.name, convertBase64UrlToBlob(b.base64))
+                            .on('progress', event => {
+                                /* the event is:
+                                {
+                                  direction: "upload" or "download"
+                                  percent: 0 to 100 // may be missing if file size is unknown
+                                  total: // total file size, may be missing
+                                  loaded: // bytes downloaded or uploaded so far
+                                } */
+                                if (event.direction == 'upload') {
+                                    console.log(event)
+                                    document.getElementById('img-progress-' + b.id).style.width = `${event.percent}%`;
+                                    let totalProgress = (((completeNum + (event.percent / 100)) / baseDataLength) * 100).toFixed(2);
+                                    document.getElementById('total-progress').style.width = `${totalProgress}%`;
 
-                                if (event.percent == 100) {
-                                    completeNum += 1;
+                                    if (event.percent == 100) {
+                                        completeNum += 1;
+                                    }
+                                    document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
                                 }
-                                document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
-                            }
+                            })
+                            .then(res => {
+                                // console.log(res)
+                            }, err => {
+                                // console.error(err)
+                            })
+                    } catch (error) {
+                        console.warn(error)
+                    }
 
-
-                        })
-                        .then(res => {
-                            // console.log(res)
-                        }, err => {
-                            // console.error(err)
-                        })
                 }
             }
         }
