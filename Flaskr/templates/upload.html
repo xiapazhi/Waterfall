@@ -118,6 +118,7 @@
         async function upload_() {
             let completeNum = 0;
             if (selectFiles.length > diffNumFile) {
+                let fileNums = selectFiles.length;
                 for (let i in selectFiles) {
                     let reader = new FileReader();
                     let readerE = await readFileAsync(selectFiles[i]);
@@ -126,11 +127,12 @@
                         .attach(selectFiles[i].name, convertBase64UrlToBlob(readerE))
                         .on('progress', event => {
                             if (event.direction == 'upload') {
+                                let totalProgress = (((completeNum + (event.percent / 100)) / fileNums) * 100).toFixed(2);
                                 document.getElementById('total-progress').style.width = `${totalProgress}%`;
                                 if (event.percent == 100) {
                                     completeNum += 1;
                                 }
-                                document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${selectFiles.length}`
+                                document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${fileNums}`
                             }
                         })
                 }
