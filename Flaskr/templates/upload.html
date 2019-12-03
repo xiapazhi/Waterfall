@@ -68,6 +68,7 @@
             document.getElementById('img_show').innerHTML = rowDivDom
         }
 
+        let diffNumFile = 1;
         let selectFiles = [];
         let baseDataToUpload = [];
         function selecFileChange(files) {
@@ -76,7 +77,7 @@
             baseDataToUpload = [];
             document.getElementById('total-progress').style.width = `30%`;
             document.getElementById('total-progress').innerHTML = `已选择 ${files.length}`;
-            if (window.FileReader) {
+            if (window.FileReader && files.length <= diffNumFile) {
                 for (let i in files) {
                     let reader = new FileReader();
                     reader.readAsDataURL(files[i]);
@@ -108,44 +109,68 @@
             }
         }
 
+        const readFileAsync = file => new Promise(resolve => {
+            const reader = new FileReader()
+            reader.onload = evt => resolve(evt.target.result)
+            reader.readAsDataURL(file)
+        })
+
         async function upload_() {
             let completeNum = 0;
-            let baseDataLength = baseDataToUpload.length;
-            if (baseDataLength) {
-                for (let b of baseDataToUpload) {
-                    try {
-                        await superagent
-                            .post('/upload/imgs/')
-                            .attach(b.name, convertBase64UrlToBlob(b.base64))
-                            .on('progress', event => {
-                                /* the event is:
-                                {
-                                  direction: "upload" or "download"
-                                  percent: 0 to 100 // may be missing if file size is unknown
-                                  total: // total file size, may be missing
-                                  loaded: // bytes downloaded or uploaded so far
-                                } */
-                                if (event.direction == 'upload') {
-                                    console.log(event)
-                                    document.getElementById('img-progress-' + b.id).style.width = `${event.percent}%`;
-                                    let totalProgress = (((completeNum + (event.percent / 100)) / baseDataLength) * 100).toFixed(2);
-                                    document.getElementById('total-progress').style.width = `${totalProgress}%`;
+            if (selectFiles.length > diffNumFile) {
+                for (let i in selectFiles) {
+                    let reader = new FileReader();
+                    let readerE = await readFileAsync(selectFiles[i]);
+                    await superagent
+                        .post('/upload/imgs/')
+                        .attach(selectFiles[i].name, convertBase64UrlToBlob(readerE))
+                        .on('progress', event => {
+                            if (event.direction == 'upload') {
+                                document.getElementById('total-progress').style.width = `${totalProgress}%`;
 
-                                    if (event.percent == 100) {
-                                        completeNum += 1;
-                                    }
-                                    document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
+                                if (event.percent == 100) {
+                                    completeNum += 1;
                                 }
-                            })
-                            .then(res => {
-                                // console.log(res)
-                            }, err => {
-                                // console.error(err)
-                            })
-                    } catch (error) {
-                        console.warn(error)
-                    }
+                                document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
+                            }
+                        })
+                }
+            } else {
+                let baseDataLength = baseDataToUpload.length;
+                if (baseDataLength) {
+                    for (let b of baseDataToUpload) {
+                        try {
+                            await superagent
+                                .post('/upload/imgs/')
+                                .attach(b.name, convertBase64UrlToBlob(b.base64))
+                                .on('progress', event => {
+                                    /* the event is:
+                                    {
+                                      direction: "upload" or "download"
+                                      percent: 0 to 100 // may be missing if file size is unknown
+                                      total: // total file size, may be missing
+                                      loaded: // bytes downloaded or uploaded so far
+                                    } */
+                                    if (event.direction == 'upload') {
+                                        document.getElementById('img-progress-' + b.id).style.width = `${event.percent}%`;
+                                        let totalProgress = (((completeNum + (event.percent / 100)) / baseDataLength) * 100).toFixed(2);
+                                        document.getElementById('total-progress').style.width = `${totalProgress}%`;
 
+                                        if (event.percent == 100) {
+                                            completeNum += 1;
+                                        }
+                                        document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
+                                    }
+                                })
+                                .then(res => {
+                                    // console.log(res)
+                                }, err => {
+                                    // console.error(err)
+                                })
+                        } catch (error) {
+                            console.warn(error)
+                        }
+                    }
                 }
             }
         }
