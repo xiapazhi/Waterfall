@@ -127,11 +127,10 @@
                         .on('progress', event => {
                             if (event.direction == 'upload') {
                                 document.getElementById('total-progress').style.width = `${totalProgress}%`;
-
                                 if (event.percent == 100) {
                                     completeNum += 1;
                                 }
-                                document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${baseDataLength}`
+                                document.getElementById('total-progress').innerHTML = `${totalProgress}% ${completeNum}/${selectFiles.length}`
                             }
                         })
                 }
