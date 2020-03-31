@@ -13,6 +13,10 @@ Flask 学习实例 (＾－＾)V
 
     $ pip install Flask
 
+#### 安装 flask-apscheduler 1.11.0
+
+    pip install flask-apscheduler
+
 #### 启动
 
 可以使用 flask 命令或者 python 的 -m 开关来运行这个应用。在 运行应用之前，需要在终端里导出 FLASK_APP 环境变量:
@@ -85,6 +89,18 @@ windows vscode:
 
     flask init-db
     #代码在 db.py init_db_command()
+
+## APScheduler
+
+APScheduler的全称是Advanced Python Scheduler。它是一个轻量级的 Python 定时任务调度框架。
+APScheduler支持三种调度任务：固定时间间隔，固定时间点（日期），Linux 下的 Crontab 命令。同时，它还支持异步执行、后台执行调度任务。
+在Flask中使用flask-apscheduler
+
+### flask-apscheduler
+
+https://github.com/viniciuschiele/flask-apscheduler
+
+
     
 
 

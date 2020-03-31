@@ -5,7 +5,8 @@ import sqlite3
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-# g 是一个特殊对象，独立于每一个请求。在处理请求过程中，它可以用于储存 可能多个函数都会用到的数据。把连接储存于其中，可以多次使用，而不用在同一个 请求中每次调用 get_db 时都创建一个新的连接。
+# g 是一个特殊对象，独立于每一个请求。在处理请求过程中，它可以用于储存 可能多个函数都会用到的数据。
+# 把连接储存于其中，可以多次使用，而不用在同一个 请求中每次调用 get_db 时都创建一个新的连接。
 
 
 def init_db():
@@ -46,8 +47,8 @@ def close_db(e=None):
 # close_db 和 init_db_command 函数需要在应用实例中注册，否则无法使用。
 # 然而，既然我们使用了工厂函数，那么在写函数的时候应用实例还无法使用。
 # 代替地， 我们写一个函数，把应用作为参数，在函数中进行注册。
-# app.teardown_appcontext() 告诉 Flask 在返回响应后进行清理的时候调用此函数。
-# app.cli.add_command() 添加一个新的 可以与 flask 一起工作的命令。
 def init_app_db(app):
+    # app.teardown_appcontext() 告诉 Flask 在返回响应后进行清理的时候调用此函数。
     app.teardown_appcontext(close_db)
+    # app.cli.add_command() 添加一个新的 可以与 flask 一起工作的命令。
     app.cli.add_command(init_db_command)

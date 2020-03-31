@@ -1,7 +1,12 @@
 from flask import current_app
+import os
+import sys
 from . import db
 import random
+from . import scheduler
 
+def test():
+    print(__name__)
 
 def allowed_file(filename):
     config = current_app.config
@@ -45,9 +50,41 @@ def get_picture(already=[]):
             realSearchIdStr = ','.join([str(id) for id in realSearchIds])
             searchSql = searchSql + " WHERE id IN (" + realSearchIdStr + ")"
         searchSql = searchSql + " LIMIT 15"
-
         cursor.execute(searchSql)
         return cursor.fetchall()
+    except Exception as e:
+        warning(e)
+
+
+def pic_already_have(filename):
+    sqlite = db.connect_db()
+    cursor = sqlite.cursor()
+    cursor.execute(
+        f"SELECT count(*) AS num FROM picture WHERE name='{filename}'")
+    if cursor.fetchone()["num"] == 0:
+        return False
+    else:
+        return True
+
+
+def check_picture():
+    try:
+        with scheduler.scheduler.app.app_context():
+            config = current_app.config
+            sqlite = db.connect_db()
+            cursor = sqlite.cursor()
+            base_path = os.path.normpath(
+                os.path.join(os.getcwd(),  config['UPLOAD_FOLDER']))
+            dirs = os.listdir(base_path)
+            for file in dirs:
+                file_path = os.path.normpath(
+                    os.path.join(base_path, file))
+                file_size = os.path.getsize(file_path) / (1024 * 1024)
+                if file_size <= 7 and not pic_already_have(file):
+                    cursor.execute(
+                        f"INSERT INTO picture(name) VALUES('{file}')")
+                    sqlite.commit()
+            # db.close_db()
     except Exception as e:
         warning(e)
 

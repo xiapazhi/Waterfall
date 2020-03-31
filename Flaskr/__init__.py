@@ -3,9 +3,12 @@ import os
 import sys
 import logging
 from flask import Flask
+from flask_apscheduler import APScheduler
 from .routes import initializeRoutes
 from flask.logging import default_handler
 from .db import init_app_db
+from .utils import test, check_picture
+from .scheduler import init_scheduler
 
 
 def create_app(test_config=None):
@@ -35,6 +38,9 @@ def create_app(test_config=None):
 
     init_app_db(app)
     initializeRoutes(app)
+
+    init_scheduler(app)
+
     return app
 
 

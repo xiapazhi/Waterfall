@@ -1,8 +1,20 @@
+# ⠄⠄⠄⣾⣿⠿⠿⠶⠿⢿⣿⣿⣿⣿⣦⣤⣄⢀⡅⢠⣾⣛⡉⠄⠄⠄⠸⢀⣿
+# ⠄⠄⢀⡋⣡⣴⣶⣶⡀⠄⠄⠙⢿⣿⣿⣿⣿⣿⣴⣿⣿⣿⢃⣤⣄⣀⣥⣿⣿
+# ⠄⠄⢸⣇⠻⣿⣿⣿⣧⣀⢀⣠⡌⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠿⣿⣿⣿
+# ⠄⢀⢸⣿⣷⣤⣤⣤⣬⣙⣛⢿⣿⣿⣿⣿⣿⣿⡿⣿⣿⡍⠄⠄⢀⣤⣄⠉⠋
+# ⠄⣼⣖⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⢇⣿⣿⡷⠶⠶⢿⣿⣿⠇⢀
+# ⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣿⡇⣿⣿⣿⣿⣿⣿⣷⣶⣥⣴⣿
+# ⢀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟
+# ⢸⣿⣦⣌⣛⣻⣿⣿⣧⠙⠛⠛⡭⠅⠒⠦⠭⣭⡻⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃
+# ⠘⣿⣿⣿⣿⣿⣿⣿⣿⡆⠄⠄⠄⠄⠄⠄⠄⠄⠹⠈⢋⣽⣿⣿⣿⣿⣵⣾⠃
+# ⠄⠘⣿⣿⣿⣿⣿⣿⣿⣿⠄⣴⣿⣶⣄⠄⣴⣶⠄⢀⣾⣿⣿⣿⣿⣿⣿⠃⠄
+# ⠄⠄⠈⠻⣿⣿⣿⣿⣿⣿⡄⢻⣿⣿⣿⠄⣿⣿⡀⣾⣿⣿⣿⣿⣛⠛⠁⠄⠄
+
 # 和 router 直接关联的写在这里 其他的写在 utils 哈哈哈哈哈
 import os
 import json
 from . import db
-from .utils import allowed_file, get_picture, warning
+from .utils import allowed_file, get_picture, pic_already_have, warning
 from werkzeug.utils import secure_filename
 # secure_filename('../../../../home/username/.bashrc') ==> 'home_username_.bashrc'
 from flask import render_template, current_app, flash, request, redirect, url_for
@@ -29,10 +41,11 @@ def uploadImgs():
         base_path = os.getcwd()  # os.getcwd() 获取当前文件/包所在绝对路径
         for v in files_dict.values():
             if v and allowed_file(v.name):
-                filename = secure_filename(v.name)
-                cursor.execute(
-                    f"SELECT count(*) AS num FROM picture WHERE name='{filename}'")
-                if cursor.fetchone()["num"] == 0:
+                # filename = secure_filename(v.name)
+                filename = v.name
+                if not pic_already_have(filename):
+                    # os.path.normpath 规范path字符串形式
+                    # os.path.join 把目录和文件名合成一个路径
                     storage_path = os.path.normpath(os.path.join(
                         base_path, config['UPLOAD_FOLDER'], filename))
                     v.save(storage_path)
@@ -49,7 +62,7 @@ def uploadImgs():
 
 
 def view_page():
-    pictures = get_picture()
+    pictures = get_picture() or []
     picture_ids = []
     for p in pictures:
         picture_ids.append(p['id'])
@@ -63,8 +76,8 @@ def view_more():
         data = []
         for row in pictures:
             data.append({
-                'id':row['id'],
-                'name':row['name']
+                'id': row['id'],
+                'name': row['name']
             })
         pictures_json = json.dumps(data)
         return pictures_json
